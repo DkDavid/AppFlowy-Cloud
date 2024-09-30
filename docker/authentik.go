@@ -38,6 +38,8 @@ func NewAuthentikProvider(ext conf.OAuthProviderConfiguration, scopes string) (O
 	}
 
 	oauthScopes := []string{
+		"openid",
+		"profile",
 		"read_user",
 		"user",
 		"email",
