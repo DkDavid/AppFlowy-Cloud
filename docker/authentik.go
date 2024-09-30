@@ -41,6 +41,7 @@ func NewAuthentikProvider(ext conf.OAuthProviderConfiguration, scopes string) (O
 		"read_user",
 		"user",
 		"email",
+		"offline_access",
 	}
 
 	if scopes != "" {
