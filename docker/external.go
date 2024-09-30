@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -163,6 +164,7 @@ func (a *API) handleOAuthCallback(r *http.Request) (*OAuthProviderData, error) {
 func (a *API) internalExternalProviderCallback(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	db := a.db.WithContext(ctx)
+	config := a.config
 
 	var grantParams models.GrantParams
 	grantParams.FillGrantParams(r)
@@ -262,6 +264,9 @@ func (a *API) internalExternalProviderCallback(w http.ResponseWriter, r *http.Re
 
 		rurl = token.AsRedirectURL(rurl, q)
 
+		if err := a.setCookieTokens(config, token, false, w); err != nil {
+			return internalServerError("Failed to set JWT cookie. %s", err)
+		}
 	}
 
 	http.Redirect(w, r, rurl, http.StatusFound)
@@ -382,7 +387,10 @@ func (a *API) createAccountFromExternalIdentity(tx *storage.Connection, r *http.
 			emailConfirmationSent := false
 			if decision.CandidateEmail.Email != "" {
 				if terr = a.sendConfirmation(r, tx, user, models.ImplicitFlow); terr != nil {
-					return nil, terr
+					if errors.Is(terr, MaxFrequencyLimitError) {
+						return nil, tooManyRequestsError(ErrorCodeOverEmailSendRateLimit, "For security purposes, you can only request this once every minute")
+					}
+					return nil, internalServerError("Error sending confirmation mail").WithInternalError(terr)
 				}
 				emailConfirmationSent = true
 			}

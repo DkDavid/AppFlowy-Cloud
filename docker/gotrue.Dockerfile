@@ -1,11 +1,14 @@
-FROM golang as base
+FROM golang AS base
 WORKDIR /go/src/supabase
 RUN git clone https://github.com/supabase/auth.git --depth 1 --branch v2.159.1
 WORKDIR /go/src/supabase/auth
 COPY docker/gotrue.patch .
+RUN git apply gotrue.patch
 COPY docker/external.go ./internal/api/
 COPY docker/authentik.go ./internal/api/provider/
-RUN git apply gotrue.patch
+COPY docker/configuration.go ./internal/conf/
+COPY docker/settings.go ./internal/api/
+
 RUN CGO_ENABLED=0 go build -o /auth .
 
 FROM scratch
