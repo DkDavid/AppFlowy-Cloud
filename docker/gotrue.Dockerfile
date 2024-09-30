@@ -3,6 +3,8 @@ WORKDIR /go/src/supabase
 RUN git clone https://github.com/supabase/auth.git --depth 1 --branch v2.159.1
 WORKDIR /go/src/supabase/auth
 COPY docker/gotrue.patch .
+COPY docker/external.go ./internal/api/
+COPY docker/authentik.go ./internal/api/provider/
 RUN git apply gotrue.patch
 RUN CGO_ENABLED=0 go build -o /auth .
 
