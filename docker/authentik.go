@@ -53,8 +53,8 @@ func NewAuthentikProvider(ext conf.OAuthProviderConfiguration, scopes string) (O
 			ClientID:     ext.ClientID[0],
 			ClientSecret: ext.Secret,
 			Endpoint: oauth2.Endpoint{
-				AuthURL:  host + "/application/o/authorize",
-				TokenURL: host + "/application/o/token",
+				AuthURL:  host + "/application/o/authorize/",
+				TokenURL: host + "/application/o/token/",
 			},
 			RedirectURL: ext.RedirectURI,
 			Scopes:      oauthScopes,
@@ -70,7 +70,7 @@ func (g authentikProvider) GetOAuthToken(code string) (*oauth2.Token, error) {
 func (g authentikProvider) GetUserData(ctx context.Context, tok *oauth2.Token) (*UserProvidedData, error) {
 	var u authentikUser
 
-	if err := makeRequest(ctx, tok, g.Config, g.Host+"/application/o/userinfo", &u); err != nil {
+	if err := makeRequest(ctx, tok, g.Config, g.Host+"/application/o/userinfo/", &u); err != nil {
 		return nil, err
 	}
 
