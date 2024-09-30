@@ -66,7 +66,7 @@ services:
     build:
       context: .
       dockerfile: docker/gotrue.Dockerfile
-    image: appflowyinc/gotrue2:${GOTRUE_VERSION:-latest}
+    # image: appflowyinc/gotrue:${GOTRUE_VERSION:-latest}
     networks:
       - appflowy-network
     environment:
