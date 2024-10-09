@@ -135,18 +135,10 @@ services:
       - APPFLOWY_DATABASE_MAX_CONNECTIONS=${APPFLOWY_DATABASE_MAX_CONNECTIONS}
       - APPFLOWY_AI_SERVER_HOST=${APPFLOWY_AI_SERVER_HOST}
       - APPFLOWY_AI_SERVER_PORT=${APPFLOWY_AI_SERVER_PORT}
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        FEATURES: ""
     image: appflowyinc/appflowy_cloud:${APPFLOWY_CLOUD_VERSION:-latest}
 
   admin_frontend:
     restart: on-failure
-    build:
-      context: .
-      dockerfile: ./admin_frontend/Dockerfile
     image: appflowyinc/admin_frontend:${APPFLOWY_ADMIN_FRONTEND_VERSION:-latest}
     networks:
       - appflowy-network
@@ -173,9 +165,6 @@ services:
     image: appflowyinc/appflowy_history:${APPFLOWY_HISTORY_VERSION:-latest}
     networks:
       - appflowy-network
-    build:
-      context: .
-      dockerfile: ./services/appflowy-history/Dockerfile
     environment:
       - RUST_LOG=${RUST_LOG:-info}
       - APPFLOWY_HISTORY_REDIS_URL=redis://redis:6379
